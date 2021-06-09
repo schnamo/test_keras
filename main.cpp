@@ -1,6 +1,6 @@
 #include<string>
 #include "SequenceToProfile.h"
-#include <fdeep/fdeep.hpp>
+#include "lib/fdeep/fdeep.hpp"
 
 //using namespace std;
 
@@ -17,7 +17,7 @@ int main()
     char seq2[18]  = {'A', 'G', 'M', 'C', 'E', 'I', 'S', 'D', 'A', 'T', 'F', 'E', 'V', 'S', 'D', 'E', 'I','\0'};
     char *seq_pointer = seq2;
 
-    SequenceToProfile test_stp(seq_pointer, seqLen, 0, 13);
-    test_stp.sequenceToProfile();
+    SequenceToProfile test_stp(0, 13);
+    test_stp.sequenceToProfile(seq_pointer, seqLen);
 
 }

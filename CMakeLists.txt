@@ -5,5 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(test_keras main.cpp SequenceToProfile.cpp SequenceToProfile.h)
 
+#include_directories(lib)
+#add_subdirectory(lib)
+
 find_package(frugally-deep CONFIG REQUIRED)
 target_link_libraries(test_keras PRIVATE frugally-deep::fdeep)

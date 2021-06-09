@@ -11,12 +11,14 @@
 // todo: error handling
 // todo: run in parallel
 
-SequenceToProfile::SequenceToProfile(char *seq, unsigned int seqLen, int seqType, int kmerSize) {
-    this->seq = seq;
-    this->L = seqLen;
+SequenceToProfile::SequenceToProfile(int seqType, int kmerSize)  :   model(fdeep::load_model("/Users/charlotte/NN/fdeep_model.json")) {
+
     this->seqType = seqType;
     this->kmerSize = kmerSize;
 
+
+//    std::cout << "model size: " << model.generate_dummy_inputs() << std::endl; // todo
+    auto blubb = model.generate_dummy_inputs();
     //    std::cout << seq[13] << std::endl;
     //    if(fkmer.size() != 13 || seq[13] != '\0' || strlen(seq) != L ){
     //        std::cout << "error" << std::endl;
@@ -27,7 +29,7 @@ SequenceToProfile::SequenceToProfile(char *seq, unsigned int seqLen, int seqType
 }
 
 SequenceToProfile::~SequenceToProfile() {
-
+//    SequenceToProfile::~SequenceToProfile() :model() {
     // todo: delete and free all the stuff
 
 }
@@ -35,19 +37,19 @@ SequenceToProfile::~SequenceToProfile() {
 // use NN to get profile for each 13-mer of the input sequence
 // in: sequence of length 1xL
 // out: profile of length 20xL
-void SequenceToProfile::sequenceToProfile() {
+void SequenceToProfile::sequenceToProfile(char *seq, unsigned int L) {
 
-    const auto model = fdeep::load_model("/Users/charlotte/NN/fdeep_model.json");
-    std::vector<float> fkmer;
-    std::vector<std::vector<float>> profile;
+    fkmer.clear();
+    profile.clear();
+    fdeep::model model = fdeep::load_model("/Users/charlotte/NN/fdeep_model.json");
 
     for(int i = 0; i < L; i++) {
-        fkmer = determineKmer(i);
+        fkmer = determineKmer(seq, L, i);
         if(fkmer.size() != kmerSize){
             std::cout << "kmer size is " << fkmer.size() << " instead of " << kmerSize << std::endl;
         }
         const auto profileT = model.predict(
-                {fdeep::tensor(fdeep::tensor_shape(static_cast<std::size_t>(13)), fkmer)});
+                {fdeep::tensor(fdeep::tensor_shape(static_cast<std::size_t>(kmerSize)), fkmer)});
         std::cout << fdeep::show_tensors(profileT) << std::endl;
         const std::vector<float> profileV = profileT[0].to_vector();
        profile.push_back(profileV);
@@ -59,7 +61,7 @@ void SequenceToProfile::sequenceToProfile() {
 }
 
 
-std::vector<float> SequenceToProfile::determineKmer(int i){
+std::vector<float> SequenceToProfile::determineKmer(char *seq, unsigned int L, int i){
 
     std::vector<float> fkmer;
     int padding = 65;
