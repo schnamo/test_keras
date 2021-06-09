@@ -1,3 +1,0 @@
-/Users/charlotte/CLionProjects/test_keras/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/charlotte/CLionProjects/test_keras/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/charlotte/CLionProjects/test_keras/cmake-build-debug/CMakeFiles/test_keras.dir
