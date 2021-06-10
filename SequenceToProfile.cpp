@@ -7,6 +7,7 @@
 #include <fdeep/fdeep.hpp>
 #include <string>
 #include <vector>
+#include <numeric>
 
 // todo: error handling
 // todo: run in parallel
@@ -45,8 +46,20 @@ void SequenceToProfile::sequenceToProfile(char *seq, unsigned int L) {
         const auto profileT = model.predict(
                 {fdeep::tensor(fdeep::tensor_shape(static_cast<std::size_t>(kmerSize)), fkmer)});
         std::cout << fdeep::show_tensors(profileT) << std::endl;
-        const std::vector<float> profileV = profileT[0].to_vector();
-       profile.push_back(profileV);
+        std::vector<float> profileV = profileT[0].to_vector();
+        // set all negative values to 0 todo: alternatively could shift all values of vector by negative value
+        for(int m = 0; m < profileV.size(); m++){
+                if(profileV[m] < 0){
+                    profileV[m] = 0;
+                }
+        }
+        // normalise profile
+        float total_sum = std::accumulate(profileV.begin(), profileV.end(),decltype(profileV)::value_type(0));
+        for(int n =  0; n < profileV.size(); n++){
+            profileV[n] = profileV[n] / total_sum;
+        }
+
+        profile.push_back(profileV);
     }
 
     if(profile.size() != L){
