@@ -10,7 +10,7 @@
 
 class SequenceToProfile {
 public:
-    SequenceToProfile(int seqType, int kmerSize);
+    SequenceToProfile(int seqType);
     ~SequenceToProfile();
 
     // Use NN to generate profile for each 13-mer

@@ -11,25 +11,19 @@
 // todo: error handling
 // todo: run in parallel
 
-SequenceToProfile::SequenceToProfile(int seqType, int kmerSize)  :   model(fdeep::load_model("/Users/charlotte/NN/fdeep_model.json")) {
+SequenceToProfile::SequenceToProfile(int seqType)  :   model(fdeep::load_model("/Users/charlotte/NN/fdeep_model.json")) {
 
     this->seqType = seqType;
-    this->kmerSize = kmerSize;
 
-
-//    std::cout << "model size: " << model.generate_dummy_inputs() << std::endl; // todo
-    auto blubb = model.generate_dummy_inputs();
-    //    std::cout << seq[13] << std::endl;
-    //    if(fkmer.size() != 13 || seq[13] != '\0' || strlen(seq) != L ){
-    //        std::cout << "error" << std::endl;
-    //        std::exit(1);
-    //    }
+    model.generate_dummy_inputs();
+    const std::vector<fdeep::tensor_shape> dummy_input = model.get_dummy_input_shapes();
+    this->kmerSize = dummy_input[0].depth_;
 
     // todo: take care of memory
 }
 
 SequenceToProfile::~SequenceToProfile() {
-//    SequenceToProfile::~SequenceToProfile() :model() {
+
     // todo: delete and free all the stuff
 
 }
