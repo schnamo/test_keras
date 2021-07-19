@@ -10,20 +10,20 @@
 
 class SequenceToProfile {
 public:
-    SequenceToProfile(int seqType);
+    SequenceToProfile(int seqType int maxLen);
     ~SequenceToProfile();
 
     // Use NN to generate profile for each 13-mer
-    void sequenceToProfile(char *seq, unsigned int seqLen);
+    void sequenceToProfile(const char *seq, unsigned int seqLen);
     // turn middle position into a kmer, add padding if needed
-    std::vector<float> determineKmer(char *seq, unsigned int seqLen, int i);
+    std::vector<float> determineKmer(const char *seq, unsigned int seqLen, int i);
 
 private:
     int seqType;
     int kmerSize;
     fdeep::model model;
     std::vector<float> fkmer;
-    std::vector<std::vector<float>> profile;
+    float * profile;
 
 };
 

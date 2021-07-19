@@ -9,33 +9,35 @@
 #include <vector>
 #include <numeric>
 
+#include "simd.h"
+
 // todo: error handling
 // todo: run in parallel
 
-SequenceToProfile::SequenceToProfile(int seqType)  :   model(fdeep::load_model("/Users/charlotte/NN/fdeep_model.json")) {
+SequenceToProfile::SequenceToProfile(int seqType, int maxLen)  :   model(fdeep::load_model("/Users/charlotte/NN/fdeep_model.json")) {
 
     this->seqType = seqType;
 
     model.generate_dummy_inputs();
     const std::vector<fdeep::tensor_shape> dummy_input = model.get_dummy_input_shapes();
     this->kmerSize = dummy_input[0].depth_;
+    this->profile = (float *)  mem_align(ALIGN_FLOAT, (maxLen + 1) * 20 * sizeof(float));
 
-    // todo: take care of memory
 }
 
 SequenceToProfile::~SequenceToProfile() {
 
-    // todo: delete and free all the stuff
+    free(this->profile);
 
 }
 
 // use NN to get profile for each 13-mer of the input sequence
 // in: sequence of length 1xL
 // out: profile of length 20xL
-void SequenceToProfile::sequenceToProfile(char *seq, unsigned int L) {
+void SequenceToProfile::sequenceToProfile(const char *seq, unsigned int L) {
 
     fkmer.clear();
-    profile.clear();
+
     fdeep::model model = fdeep::load_model("/Users/charlotte/NN/fdeep_model.json");
 
     for(int i = 0; i < L; i++) {
@@ -56,19 +58,15 @@ void SequenceToProfile::sequenceToProfile(char *seq, unsigned int L) {
         // normalise profile
         float total_sum = std::accumulate(profileV.begin(), profileV.end(),decltype(profileV)::value_type(0));
         for(int n =  0; n < profileV.size(); n++){
-            profileV[n] = profileV[n] / total_sum;
+//            profileV[n] = profileV[n] / total_sum;
+            profile[i*L + n] =  profileV[n] / total_sum;
         }
-
-        profile.push_back(profileV);
     }
 
-    if(profile.size() != L){
-        std::cout << "Generating profile failed." << std::endl;
-    }
 }
 
 
-std::vector<float> SequenceToProfile::determineKmer(char *seq, unsigned int L, int i){
+std::vector<float> SequenceToProfile::determineKmer(const char *seq, unsigned int L, int i){
 
     std::vector<float> fkmer;
     int padding = 65;
